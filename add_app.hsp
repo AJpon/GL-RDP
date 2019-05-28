@@ -1,0 +1,63 @@
+cur = dir_cur
+*draw_window
+	screen 0,242,150,0
+	cls 1
+	title "add apps"
+	objmode 2
+
+	font "ÇlÇr ÉSÉVÉbÉN",12,0
+	pos 4,20
+	if path = 0 {
+		path = "path/to/file"
+	}
+	input path,200,30
+
+	pos 4,75
+	if name = 0 {
+		name = "noname"
+	}
+	input name,232,30,60
+
+	objsize 26,26
+	pos 210,22
+	button "",*choose_file
+
+	objsize 229,23
+	pos 7,116
+	button "add",*add_app
+
+	objsize 240,55
+	pos 1,5
+	mes " Path"
+
+	pos 1,60
+	mes " Name"
+
+	onkey gosub *keycheck
+	
+	stop
+	
+*keycheck
+	if iparam = 13 {
+		onkey 0
+		goto *add_app
+	}
+	return
+
+*choose_file
+	dialog "exe",16
+	path = refstr
+	goto *draw_window
+
+*add_app
+	chdir cur
+	chdir "launcher"
+	notesel note
+	noteload "template.txt"
+	strrep note,"file.exe",""+path+""
+	notesave ""+name+".bat"
+	chdir cur
+	run "draw_window.ax"
+
+*_dummy
+	stop

@@ -1,0 +1,1 @@
+C:\Windows\sysnative\cmd.exe /c applauncher.bat

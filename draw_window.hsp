@@ -1,0 +1,106 @@
+#packopt icon "typo128.ico"
+#packopt name "GL_RDP"
+
+screen 0,282,274,0
+cur = dir_cur
+chdir "launcher"
+*main_window
+	cls 1
+	title "GL-RDP"
+	objmode 2
+
+	dirlist list_shortcuts,"*.bat",3
+
+	font "‚l‚r ƒSƒVƒbƒN",12,0
+	objsize 282,186
+	pos 0,0
+	index = -1
+	listbox index,0,""+list_shortcuts+""
+
+	objsize 282,30
+	
+	pos 0,180
+	button "Add app",*Add
+	
+	pos 0,212
+	button "Remove app",*remove
+	
+	pos 0,244
+	button "launch app (enable OpenGL in RDP session)",*launch
+
+	notesel list_shortcuts
+
+	onkey gosub *keycheck
+
+	stop
+	
+*keycheck
+	if iparam = 13 {
+		onkey 0
+		goto *launch
+	}
+	return
+
+*Add
+	run "add_app.ax"
+	stop
+
+*remove
+	if index = -1 {
+		cls
+		goto *main_window
+	}
+	
+	noteget item,index
+	dialog "Are you sure you want to remove this item?",3,"Remove Item"
+	if stat = 6 {
+		delete item
+	}
+	cls
+	goto *main_window
+	stop
+
+*launch
+	if index = -1 {
+		cls
+		goto *main_window
+	}
+	
+	notesel detectsession
+	noteadd "query session>"+dir_cur+"\\id"
+	notesave "query_session.bat"
+	detectsession = 0
+	noteadd "C:\\Windows\\sysnative\\cmd.exe /c query_session.bat",0,1
+	notesave "query_session_launcher.bat"
+	exec "query_session_launcher.bat",16
+	wait 350
+	notesel detectsession
+	noteload "id"
+	noteget sessionid,notefind("Active",2)
+	detectsession = 0
+	currentid = strmid(sessionid,instr(sessionid,0,"Active")-3,1)
+	//noteunsel
+
+	delete "query_session_launcher.bat"
+	delete "query_session.bat"
+	delete "id"
+
+	notesel list_shortcuts
+	noteget item,index
+	notesel launcher
+	noteload item
+	noteget edit,0
+	strrep edit, "1", currentid
+	noteadd edit,0,1
+	notesave "temp.bat"
+	launcher = 0
+	noteunsel
+	
+	chdir cur
+	exec "launcher.bat",16
+	wait 800
+	chdir "launcher"
+	delete "temp.bat"
+	cls
+	goto *main_window
+	stop

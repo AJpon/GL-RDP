@@ -1,0 +1,10 @@
+;#include "hspdef.as"
+
+cur = dir_cur 
+chdir "launcher"
+notesel note
+noteload "template.txt"
+noteadd "start "+path+"",1,1
+notesave ""+name+".bat"
+chdir cur
+run "draw_window.ax"
