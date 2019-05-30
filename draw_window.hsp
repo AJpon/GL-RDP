@@ -78,7 +78,7 @@ chdir "launcher"
 	noteload "id"
 	noteget sessionid,notefind("Active",2)
 	detectsession = 0
-	currentid = strmid(sessionid,instr(sessionid,0,"Active")-3,1)
+	currentid = strmid(sessionid,instr(sessionid,0,"Active")-5,3)
 	//noteunsel
 
 	delete "query_session_launcher.bat"
